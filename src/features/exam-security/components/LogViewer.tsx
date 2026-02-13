@@ -28,10 +28,11 @@ export const LogViewer = () => {
         return (
             <button
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition-all z-50 text-xs font-mono border border-gray-600"
+                className="fixed bottom-6 right-6 bg-slate-900 text-white p-4 rounded-full shadow-2xl hover:bg-slate-800 transition-all z-50 flex items-center gap-2 border-2 border-slate-700 hover:scale-110 active:scale-95"
                 title="View Security Logs"
             >
-                📜 Logs
+                <span className="text-2xl">📜</span>
+                <span className="font-bold text-sm hidden group-hover:block pr-2">Security Logs</span>
             </button>
         );
     }
