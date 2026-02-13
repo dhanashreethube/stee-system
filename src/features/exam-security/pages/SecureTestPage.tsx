@@ -7,6 +7,7 @@ import { useFullscreenGuard } from '../hooks/useFullscreenGuard';
 import { WarningModal } from '../components/WarningModal';
 import { ViolationBadge } from '../components/ViolationBadge';
 import { TimerDisplay } from '../components/TimerDisplay';
+import { LogViewer } from '../components/LogViewer';
 
 const SecureTestPage = () => {
     const { state, dispatch } = useSecurityContext();
@@ -154,6 +155,7 @@ const SecureTestPage = () => {
                     Secure Connection Active
                 </span>
             </footer>
+            <LogViewer />
         </div>
     );
 };
