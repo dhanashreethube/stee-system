@@ -2,6 +2,7 @@ import { useRef, useCallback, useEffect } from 'react';
 import { SecurityLog } from '../types';
 
 const LOG_STORAGE_KEY = 'stee_unsent_logs';
+const SESSION_HISTORY_KEY = 'stee_session_history';
 const BATCH_INTERVAL = 10000; // 10 seconds
 
 export const useLogService = (_attemptId: string) => {
@@ -11,8 +12,18 @@ export const useLogService = (_attemptId: string) => {
     // Core add function - No re-renders
     const addLog = useCallback((log: SecurityLog) => {
         logBuffer.current.push(log);
-        // Immediate persist to local storage for crash recovery
+
+        // 1. Persist to unsent queue (for sync)
         saveToStorage();
+
+        // 2. Persist to session history (for viewing)
+        try {
+            const history = JSON.parse(localStorage.getItem(SESSION_HISTORY_KEY) || '[]');
+            history.push(log);
+            localStorage.setItem(SESSION_HISTORY_KEY, JSON.stringify(history));
+        } catch (e) {
+            console.error("Failed to update session history", e);
+        }
     }, []);
 
     const saveToStorage = () => {

@@ -4,12 +4,15 @@ import { useSecurityMonitor } from '../hooks/useSecurityMonitor';
 import { useDefensiveBlockers } from '../hooks/useDefensiveBlockers';
 import { useExamTimer } from '../hooks/useExamTimer';
 import { useFullscreenGuard } from '../hooks/useFullscreenGuard';
+import { useLogService } from '../hooks/useLogService';
 import { WarningModal } from '../components/WarningModal';
 import { ViolationBadge } from '../components/ViolationBadge';
 import { TimerDisplay } from '../components/TimerDisplay';
 import { LogViewer } from '../components/LogViewer';
 
 const SecureTestPage = () => {
+    const { addLog } = useLogService('attempt-123'); // Should match context or prop
+
     const { state, dispatch } = useSecurityContext();
     const { isFullscreen, enterFullscreen } = useFullscreenGuard();
     const [showWarning, setShowWarning] = useState(false);
@@ -29,12 +32,44 @@ const SecureTestPage = () => {
     const handleStart = () => {
         enterFullscreen();
         dispatch({ type: 'START_EXAM', payload: { duration: 3600 } });
+        addLog({
+            id: crypto.randomUUID(),
+            eventType: 'TIMER_START',
+            timestamp: Date.now(),
+            attemptId: 'attempt-123',
+            metadata: {
+                browser: navigator.userAgent,
+                visibilityState: document.visibilityState,
+                focusState: document.hasFocus(),
+                violationCount: 0,
+                onlineStatus: navigator.onLine,
+                screenResolution: `${window.screen.width}x${window.screen.height}`
+            }
+        });
+    };
+
+    const handleSubmit = () => {
+        addLog({
+            id: crypto.randomUUID(),
+            eventType: 'EXAM_SUBMIT',
+            timestamp: Date.now(),
+            attemptId: 'attempt-123',
+            metadata: {
+                browser: navigator.userAgent,
+                visibilityState: document.visibilityState,
+                focusState: document.hasFocus(),
+                violationCount: state.violationCount,
+                onlineStatus: navigator.onLine,
+                screenResolution: `${window.screen.width}x${window.screen.height}`
+            }
+        });
+        dispatch({ type: 'SUBMIT_EXAM' });
     };
 
     if (state.status === 'LOCKED' || state.status === 'SUBMITTED') {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-8">
-                <div className="max-w-lg text-center">
+            <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-8 relative">
+                <div className="max-w-lg text-center z-10">
                     <h1 className="text-4xl font-bold mb-4">
                         {state.status === 'LOCKED' ? '🚫 Exam Locked' : '✅ Exam Submitted'}
                     </h1>
@@ -48,6 +83,7 @@ const SecureTestPage = () => {
                         <p className="font-mono text-sm text-red-400 mt-2">Violations Recorded: {state.violationCount}</p>
                     </div>
                 </div>
+                <LogViewer />
             </div>
         );
     }
@@ -139,7 +175,7 @@ const SecureTestPage = () => {
 
                 <div className="mt-8 flex justify-end">
                     <button
-                        onClick={() => dispatch({ type: 'SUBMIT_EXAM' })}
+                        onClick={handleSubmit}
                         className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded shadow-lg transition-transform hover:-translate-y-0.5"
                     >
                         Submit Assessment
