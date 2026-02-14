@@ -35,6 +35,7 @@ export interface SecurityState {
     startTime: number | null;
     remainingTime: number; // in seconds
     status: 'IDLE' | 'ACTIVE' | 'LOCKED' | 'SUBMITTED';
+    logs: SecurityLog[];
 }
 
 export type SecurityAction =
@@ -43,4 +44,5 @@ export type SecurityAction =
     | { type: 'TICK_TIMER' }
     | { type: 'SUBMIT_EXAM' }
     | { type: 'LOCK_EXAM' }
-    | { type: 'RESUME_EXAM' }; // Admin unlock
+    | { type: 'RESUME_EXAM' }
+    | { type: 'ADD_LOG'; payload: SecurityLog };

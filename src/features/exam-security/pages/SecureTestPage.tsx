@@ -68,22 +68,25 @@ const SecureTestPage = () => {
 
     if (state.status === 'LOCKED' || state.status === 'SUBMITTED') {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-8 relative">
-                <div className="max-w-lg text-center z-10">
-                    <h1 className="text-4xl font-bold mb-4">
-                        {state.status === 'LOCKED' ? '🚫 Exam Locked' : '✅ Exam Submitted'}
-                    </h1>
-                    <p className="text-slate-300 mb-8">
-                        {state.status === 'LOCKED'
-                            ? 'You have exceeded the maximum number of security violations. Your session has been terminated.'
-                            : 'Thank you. Your answers have been recorded securely.'}
-                    </p>
-                    <div className="p-4 bg-slate-800 rounded border border-slate-700">
-                        <p className="font-mono text-sm">Session ID: {crypto.randomUUID().slice(0, 8)}</p>
-                        <p className="font-mono text-sm text-red-400 mt-2">Violations Recorded: {state.violationCount}</p>
+            <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-8 overflow-auto">
+                <div className="max-w-4xl w-full flex flex-col items-center">
+                    <div className="max-w-lg text-center mb-8">
+                        <h1 className="text-4xl font-bold mb-4">
+                            {state.status === 'LOCKED' ? '🚫 Exam Locked' : '✅ Exam Submitted'}
+                        </h1>
+                        <p className="text-slate-300 mb-8">
+                            {state.status === 'LOCKED'
+                                ? 'You have exceeded the maximum number of security violations. Your session has been terminated.'
+                                : 'Thank you. Your answers have been recorded securely.'}
+                        </p>
+                        <div className="p-4 bg-slate-800 rounded border border-slate-700">
+                            <p className="font-mono text-sm">Session ID: {crypto.randomUUID().slice(0, 8)}</p>
+                            <p className="font-mono text-sm text-red-400 mt-2">Violations Recorded: {state.violationCount}</p>
+                        </div>
                     </div>
+
+                    <LogViewer forceOpen embedded />
                 </div>
-                <LogViewer />
             </div>
         );
     }

@@ -1,28 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { SecurityLog } from '../types';
+import { useState, useEffect } from 'react';
+import { useSecurityContext } from '../context/SecurityContext';
 
 export const LogViewer = ({ forceOpen = false, embedded = false }: { forceOpen?: boolean; embedded?: boolean }) => {
     const [isOpen, setIsOpen] = useState(forceOpen);
-    const [logs, setLogs] = useState<SecurityLog[]>([]);
+    const { state } = useSecurityContext();
+    const logs = [...state.logs].reverse(); // Newest first
 
-    const fetchLogs = () => {
-        try {
-            const stored = localStorage.getItem('stee_session_history');
-            if (stored) {
-                setLogs(JSON.parse(stored).reverse()); // Newest first
-            }
-        } catch (e) {
-            console.error("Failed to parse logs", e);
-        }
-    };
-
-    useEffect(() => {
-        if (isOpen || forceOpen) {
-            fetchLogs();
-            const interval = setInterval(fetchLogs, 1000); // Poll for updates
-            return () => clearInterval(interval);
-        }
-    }, [isOpen, forceOpen]);
+    // Removed manual fetch logic since we now bind to context state directly
 
     useEffect(() => {
         if (forceOpen) setIsOpen(true);
@@ -46,12 +30,7 @@ export const LogViewer = ({ forceOpen = false, embedded = false }: { forceOpen?:
             <div className="p-4 border-b flex justify-between items-center bg-gray-50">
                 <h2 className="text-xl font-bold text-gray-800">Security Audit Logs</h2>
                 <div className="flex gap-2">
-                    <button
-                        onClick={fetchLogs}
-                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-sm"
-                    >
-                        Refresh
-                    </button>
+                    {/* LogViewer is now reactive, no need for refresh */}
                     {!forceOpen && (
                         <button
                             onClick={() => setIsOpen(false)}

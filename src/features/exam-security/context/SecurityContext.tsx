@@ -7,7 +7,8 @@ const initialState: SecurityState = {
     isSubmitted: false,
     startTime: null,
     remainingTime: 3600, // Default 1 hour
-    status: 'IDLE'
+    status: 'IDLE',
+    logs: []
 };
 
 const MAX_VIOLATIONS = 7;
@@ -44,6 +45,11 @@ function securityReducer(state: SecurityState, action: SecurityAction): Security
             return { ...state, status: 'LOCKED', isLocked: true };
         case 'RESUME_EXAM':
             return { ...state, status: 'ACTIVE', isLocked: false };
+        case 'ADD_LOG':
+            return {
+                ...state,
+                logs: [action.payload, ...state.logs]
+            };
         default:
             return state;
     }
